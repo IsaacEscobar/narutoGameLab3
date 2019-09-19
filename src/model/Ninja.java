@@ -8,7 +8,8 @@ public class Ninja implements Comparable<Ninja>, Comparator<Ninja> {
 	private String personality;
 	private String creationDate;
 	private int powerQuantity;
-	private Jutsu jutsus;
+	private Jutsu firstJutsu;
+	
 	private Ninja nextNinja;
 	private Ninja previousNinja;
 	
@@ -51,12 +52,12 @@ public class Ninja implements Comparable<Ninja>, Comparator<Ninja> {
 		this.powerQuantity = powerQuantity;
 	}
 
-	public Jutsu getJutsus() {
-		return jutsus;
+	public Jutsu getJutsu() {
+		return firstJutsu;
 	}
 
-	public void setJutsus(Jutsu jutsus) {
-		this.jutsus = jutsus;
+	public void setJutsu(Jutsu jutsus) {
+		this.firstJutsu = jutsus;
 	}
 
 	public Ninja getNextNinja() {
@@ -73,6 +74,21 @@ public class Ninja implements Comparable<Ninja>, Comparator<Ninja> {
 
 	public void setPreviousNinja(Ninja previousNinja) {
 		this.previousNinja = previousNinja;
+	}
+	
+	public void addNewJutsu(Jutsu j) {
+		Jutsu jutsu = firstJutsu;
+		while(jutsu != null) {
+			if(!jutsu.getName().equals(j.getName())) {
+				if(jutsu .getNextJutsu() == null) {
+					jutsu.setNextJutsu(j);
+				} else {
+					jutsu = jutsu.getNextJutsu();
+				}
+			} else {
+				jutsu = jutsu.getNextJutsu();
+			}
+		}
 	}
 
 	@Override
