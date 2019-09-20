@@ -26,5 +26,15 @@ public class Icesi {
 			}
 		}
 	}
-
+	
+	public void addNinjaToAClan(Ninja n, Clan c) {
+		Clan clan = firstClan;
+		while (clan != null) {
+			if(c.compareTo(clan) == 0) {
+				c.addNewNinja(n);
+			} else {
+				clan = clan.getNextClan();
+			}
+		}
+	}
 }

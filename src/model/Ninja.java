@@ -90,6 +90,10 @@ public class Ninja implements Comparable<Ninja>, Comparator<Ninja> {
 			}
 		}
 	}
+	
+	public void sortJutsusByMultiplier() {
+		
+	}
 
 	@Override
 	public int compareTo(Ninja n) {

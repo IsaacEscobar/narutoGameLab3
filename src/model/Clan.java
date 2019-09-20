@@ -6,7 +6,7 @@ public class Clan implements Comparable<Clan> {
 	
 	private Clan nextClan;
 	private Ninja firstNinja;
-	private Jutsu firstJutsu;
+//	private Jutsu firstJutsu;
 
 	public Clan(String name) {
 		this.name = name;
@@ -36,13 +36,13 @@ public class Clan implements Comparable<Clan> {
 		this.firstNinja = n;
 	}
 	
-	public Jutsu getFirstJutsu() {
-		return firstJutsu;
-	}
-	
-	public void setFirstJutsu(Jutsu j) {
-		this.firstJutsu = j;
-	}
+//	public Jutsu getFirstJutsu() {
+//		return firstJutsu;
+//	}
+//	
+//	public void setFirstJutsu(Jutsu j) {
+//		this.firstJutsu = j;
+//	}
 
 	public void addNewNinja(Ninja n) {
 		Ninja ninja = firstNinja;
@@ -55,6 +55,17 @@ public class Clan implements Comparable<Clan> {
 				}
 			} else {
 				ninja = ninja.getNextNinja();
+			}
+		}
+	}
+	
+	public void addNewJutsuToANinja(Ninja n, Jutsu j) {
+		Ninja ninja = firstNinja;
+		while(ninja != null) {
+			if(ninja.compareTo(n) == 0) {
+				n.addNewJutsu(j);
+			} else {
+				ninja = ninja.getNextNinja(); 
 			}
 		}
 	}
