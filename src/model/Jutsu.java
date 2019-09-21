@@ -5,11 +5,11 @@ import java.util.Comparator;
 public class Jutsu implements Comparable<Jutsu>, Comparator<Jutsu> {
 
 	private String name;
-	private int multiplier;
+	private double multiplier;
 	
 	private Jutsu nextJutsu;
 
-	public Jutsu(String name, int multiplier) {
+	public Jutsu(String name, double multiplier) {
 		this.name = name;
 		this.multiplier = multiplier;
 	}
@@ -22,7 +22,7 @@ public class Jutsu implements Comparable<Jutsu>, Comparator<Jutsu> {
 		this.name = name;
 	}
 
-	public int getMultiplier() {
+	public double getMultiplier() {
 		return multiplier;
 	}
 
@@ -40,7 +40,7 @@ public class Jutsu implements Comparable<Jutsu>, Comparator<Jutsu> {
 
 	@Override
 	public int compare(Jutsu j1, Jutsu j2) {
-		return j1.getMultiplier() - j2.getMultiplier();
+		return (int) (j1.getMultiplier() - j2.getMultiplier());
 	}
 	
 	@Override

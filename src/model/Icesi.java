@@ -4,11 +4,25 @@ public class Icesi {
 	
 	private Clan firstClan;
 	
-	public Clan getClan() {
+	public Icesi() {
+		Clan uzumakis = new Clan("Uzumaki");
+		Ninja naruto = new Ninja("Naruto", "Activa", "20/09/19", 899);
+		Jutsu kage_bunshin = new Jutsu("Kage-Bunshin", 0.69); 
+		uzumakis.setFirstNinja(naruto);
+		uzumakis.getFirstNinja().setFirstJutsu(kage_bunshin);
+		Clan uchiha = new Clan("Uchiha");
+		Ninja sasuke = new Ninja("Sasuke", "Introvertida", "20/09/19", 900);
+		Jutsu katon = new Jutsu("Katon", 0.80);
+		addNewClan(uchiha);
+		addNinjaToAClan(sasuke, uchiha);
+		sasuke.addNewJutsu(katon);
+	}
+	
+	public Clan getFirstClan() {
 		return firstClan;
 	}
 	
-	public void setClan(Clan c) {
+	public void setFirstClan(Clan c) {
 		this.firstClan = c;
 	}
 	

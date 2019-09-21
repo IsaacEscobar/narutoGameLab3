@@ -82,4 +82,9 @@ public class Clan implements Comparable<Clan> {
 	public int compareTo(Clan c) {
 		return this.getName().compareTo(c.getName());
 	}
+	
+	@Override
+	public String toString() {
+		return "Clan " + getName();
+	}
 }

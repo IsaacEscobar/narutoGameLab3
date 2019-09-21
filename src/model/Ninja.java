@@ -8,8 +8,8 @@ public class Ninja implements Comparable<Ninja>, Comparator<Ninja> {
 	private String personality;
 	private String creationDate;
 	private int powerQuantity;
-	private Jutsu firstJutsu;
 	
+	private Jutsu firstJutsu;
 	private Ninja nextNinja;
 	private Ninja previousNinja;
 	
@@ -52,12 +52,12 @@ public class Ninja implements Comparable<Ninja>, Comparator<Ninja> {
 		this.powerQuantity = powerQuantity;
 	}
 
-	public Jutsu getJutsu() {
+	public Jutsu getFirstJutsu() {
 		return firstJutsu;
 	}
 
-	public void setJutsu(Jutsu jutsus) {
-		this.firstJutsu = jutsus;
+	public void setFirstJutsu(Jutsu jutsu) {
+		this.firstJutsu = jutsu;
 	}
 
 	public Ninja getNextNinja() {
