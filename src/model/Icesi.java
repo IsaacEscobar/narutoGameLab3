@@ -2,6 +2,7 @@ package model;
 
 import java.util.Scanner;
 
+import exceptions.NotFound;
 import exceptions.SameName;
 
 public class Icesi {
@@ -120,43 +121,54 @@ public class Icesi {
 			option = reader.nextInt();
 			System.out.println(" ");
 			switch (option) {
-			case 1:
-				addClan();
-				break;
-			case 2:
-				System.out.println("Digite el nombre del clan al cual desea añadir el personaje: ");
-				reader.nextLine();
-				String cName = reader.nextLine();
-				Clan aux = searchClan(cName);
-				if(aux != null) {
-					addNinja(aux);
-					System.out.println(" ");
-				} else {
-					System.out.println(" ");
-				}
-				break;
-			case 3:
-				System.out.println("Digite el nombre del clan al que pertenece el personaje: ");
-				reader.nextLine();
-				String cName2 = reader.nextLine();
-				Clan aux1 = searchClan(cName2);
-				if(aux1 != null) {
-					System.out.println("Digite el nombre del personaje al cual desea añadir la tecnica: ");
-					//reader.nextLine();
-					String nName = reader.nextLine();
-					Ninja aux2 = searchNinjaInAClan(cName2, nName);
-					if(aux2 != null) {
-						addJutsu(aux1, aux2);
-						System.out.println(" ");
-					} else {
-						System.out.println(" ");
+				case 1:
+					addClan();
+					break;
+				case 2:
+					System.out.println("Digite el nombre del clan al cual desea añadir el personaje: ");
+					reader.nextLine();
+					String cName = reader.nextLine();
+					try {
+						Clan aux = searchClan(cName);
+						if(aux != null) {
+							addNinja(aux);
+							System.out.println(" ");
+						} else {
+							System.out.println(" ");
+						}
+					} catch(NotFound m) {
+						System.out.println(m.getMessage());
 					}
 					break;
-				}
-			}	
-		} while(option != 4);
+				case 3:
+					System.out.println("Digite el nombre del clan al que pertenece el personaje: ");
+					reader.nextLine();
+					String cName2 = reader.nextLine();
+					try {
+						Clan aux1 = searchClan(cName2);
+						if(aux1 != null) {
+							System.out.println("Digite el nombre del personaje al cual desea añadir la tecnica: ");
+							//reader.nextLine();
+							String nName = reader.nextLine();
+							try {
+								Ninja aux2 = searchNinjaInAClan(cName2, nName);
+								if(aux2 != null) {
+									addJutsu(aux1, aux2);
+									System.out.println(" ");
+								} else {
+									System.out.println(" ");
+								}
+							}catch(NotFound m) {
+								System.out.println(m.getMessage());
+							} 
+						}
+					} catch(NotFound m) {
+					System.out.println(m.getMessage());
+					}
+					break;
+			} 
+		}while(option != 4);
 	}
-	
 	public void delete() {
 		int option = 0;
 		do {
@@ -286,6 +298,10 @@ public class Icesi {
 	}
 	
 	public void deleteClan() {
+		System.out.println(" ");
+		System.out.println("Digite el nombre del clan que desea eliminar: ");
+		reader.nextLine();
+		String cName = reader.nextLine();
 		
 	}
 	
@@ -327,7 +343,7 @@ public class Icesi {
 		return msg;
 	}
 	
-	private Clan searchClan(String cName) {
+	private Clan searchClan(String cName) throws NotFound {
 		Clan searched = null;
 		Clan aux = firstClan;
 		while(aux != null) {
@@ -339,12 +355,12 @@ public class Icesi {
 			}
 		}
 		if(searched == null) {
-			System.out.println("El clan buscado no existe.");
+			throw new NotFound("El clan buscado no existe.");
 		}
 		return searched;
 	}
 	
-	public Ninja searchNinjaInAClan(String cName, String nName) {
+	public Ninja searchNinjaInAClan(String cName, String nName) throws NotFound {
 		Clan cSearched = searchClan(cName);
 		Ninja nSearched = null;
 		Clan aux1 = firstClan;
@@ -366,8 +382,7 @@ public class Icesi {
 			}
 		}
 		if(nSearched == null) {
-			System.out.println("El personaje buscado no existe.");
-			nSearched = null;
+			throw new NotFound("El personaje buscado no existe.");
 		}
 		return nSearched;
 	}
