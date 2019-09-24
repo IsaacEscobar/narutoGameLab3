@@ -1,6 +1,17 @@
 package model;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Scanner;
+import java.util.Vector;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import exceptions.NotFound;
 import exceptions.SameName;
@@ -10,44 +21,45 @@ public class Icesi {
 	private Clan firstClan;
 	private Scanner reader;
 	
-	public Icesi() {
+	public Icesi() throws FileNotFoundException, ClassNotFoundException, IOException {
 		reader = new Scanner(System.in);
-		Clan uzumaki = new Clan("Uzumaki");
-		Ninja naruto = new Ninja("Naruto", "Activa", "20/09/19", 899);
-		Jutsu kage_bunshin = new Jutsu("Kage-Bunshin", 0.69);
-		setFirstClan(uzumaki);
-		uzumaki.setFirstNinja(naruto);
-		uzumaki.getFirstNinja().setFirstJutsu(kage_bunshin);
-		Clan uchiha = new Clan("Uchiha");
-		Ninja sasuke = new Ninja("Sasuke", "Introvertida", "20/09/19", 900);
-		Jutsu katon = new Jutsu("Katon", 0.80);
-		try {
-			addNewClan(uchiha);
-		} catch(SameName m) {
-			System.out.println(m.getMessage());
-		}
-		try {
-			addNinjaToAClan(sasuke, uchiha);
-		} catch(SameName m) {
-			System.out.println(m.getMessage());
-		}
-		try {
-			sasuke.addNewJutsu(katon);
-		} catch(SameName m) {
-			System.out.println(m.getMessage());
-		}
-		Ninja karin = new Ninja("Karin", "Pasiva", "23/09/19", 290);
-		Jutsu nose = new Jutsu("Clones", 0.1);
-		try {
-			addNinjaToAClan(karin, uzumaki);
-		} catch(SameName m) {
-			System.out.println(m.getMessage());
-		}
-		try {
-			uzumaki.addNewJutsuToANinja(karin, nose);
-		} catch(SameName m) {
-			System.out.println(m.getMessage());
-		}
+		serialize();
+//		Clan uzumaki = new Clan("Uzumaki");
+//		Ninja naruto = new Ninja("Naruto", "Activa", "20/09/19", 899);
+//		Jutsu kage_bunshin = new Jutsu("Kage-Bunshin", 0.69);
+//		setFirstClan(uzumaki);
+//		uzumaki.setFirstNinja(naruto);
+//		uzumaki.getFirstNinja().setFirstJutsu(kage_bunshin);
+//		Clan uchiha = new Clan("Uchiha");
+//		Ninja sasuke = new Ninja("Sasuke", "Introvertida", "20/09/19", 900);
+//		Jutsu katon = new Jutsu("Katon", 0.80);
+//		try {
+//			addNewClan(uchiha);
+//		} catch(SameName m) {
+//			System.out.println(m.getMessage());
+//		}
+//		try {
+//			addNinjaToAClan(sasuke, uchiha);
+//		} catch(SameName m) {
+//			System.out.println(m.getMessage());
+//		}
+//		try {
+//			sasuke.addNewJutsu(katon);
+//		} catch(SameName m) {
+//			System.out.println(m.getMessage());
+//		}
+//		Ninja karin = new Ninja("Karin", "Pasiva", "23/09/19", 290);
+//		Jutsu nose = new Jutsu("Clones", 0.1);
+////		try {
+////			addNinjaToAClan(karin, uzumaki);
+////		} catch(SameName m) {
+////			System.out.println(m.getMessage());
+////		}
+////		try {
+////			uzumaki.addNewJutsuToANinja(karin, nose);
+////		} catch(SameName m) {
+////			System.out.println(m.getMessage());
+////		}
 	}
 	
 	public Clan getFirstClan() {
@@ -80,6 +92,47 @@ public class Icesi {
 		}
 		return thereIs;
 	}
+
+	public void deleteAClan(Clan c) {
+		Clan aux = firstClan;
+		if(aux.compareTo(c) == 0) {
+			setFirstClan(aux.getNextClan());
+		} else {
+			while(aux != null) {
+				if(aux.getNextClan().compareTo(c) == 0) {
+					aux.setNextClan(null);
+					aux = null;
+				} else {
+					aux = aux.getNextClan();
+				}
+			}
+		}
+	}
+
+	public void deleteANinjaFromAClan(Clan c, Ninja n) {
+		Clan aux1 = firstClan;
+		Ninja aux2 = aux1.getFirstNinja();
+		if(aux1.getFirstNinja() == null) {
+			setFirstClan(aux1.getNextClan());
+		} else {
+			while(aux1 != null) {
+				if(aux2.compareTo(n) == 0) {
+					aux1.setFirstNinja(aux2.getNextNinja());
+					aux1 = null;
+				} else {
+					while(aux2 != null) {
+						if(aux2.getNextNinja().compareTo(n) == 0) {
+							aux2.setNextNinja(n);
+							aux2.getNextNinja().setPreviousNinja(aux2);
+							aux2 = null;
+						} else {
+							aux2 = aux2.getNextNinja();
+						}
+					}
+				}
+			}
+		}
+	}
 	
 	public boolean addNinjaToAClan(Ninja n, Clan c) throws SameName{
 		boolean thereIs = true;
@@ -103,7 +156,7 @@ public class Icesi {
 		System.out.println("2- Eliminar.");
 		System.out.println("3- Modificar.");
 		System.out.println("4- Ordenar y mostrar.");
-		System.out.println("0- Salir del sistema.");
+		System.out.println("0- Guardar y salir del sistema.");
 		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		System.out.println(" ");
 	}
@@ -183,27 +236,52 @@ public class Icesi {
 			System.out.println(" ");
 			switch(option) {
 				case 1:
-					deleteClan();
+					try {
+						deleteClan();
+					} catch(NotFound m) {
+						System.out.println(m.getMessage());
+					}
 					System.out.println(" ");
 					break;
 				case 2:
-					deleteNinja();
+					try {
+						deleteNinja();
+					} catch(NotFound m) {
+						System.out.println(m.getMessage());
+					}
 					System.out.println(" ");
 					break;
 				case 3:
-					deleteJutsu();
-					System.out.println(" ");
+					//deleteJutsu();
+					System.out.println("NO IMPLEMENTADO :/");
 					break;
 			}
 		} while(option != 4);
 	}
 	
 	public void update() {
-		
+		System.out.println("NO IMPLEMENTADO :/");
 	}
 	
-	public void showInfo() {
-		System.out.println(toString());
+	public void showInfo() throws NullPointerException {
+		Clan aux = firstClan;
+		if(firstClan.getFirstNinja() == null) {
+			while(aux != null) {
+				Ninja auxN = aux.getFirstNinja();
+				if(auxN != null) {
+					firstClan = aux;
+					aux = null;
+				} else {
+					aux = aux.getNextClan();
+				}
+			}
+		} else {
+			if(firstClan != null) {
+				System.out.println(toString());
+			} else {
+				throw new NullPointerException();
+			}
+		}
 	}
 	
 	public void addClan() {
@@ -297,16 +375,44 @@ public class Icesi {
 		}
 	}
 	
-	public void deleteClan() {
+	public void deleteClan() throws NotFound {
 		System.out.println(" ");
 		System.out.println("Digite el nombre del clan que desea eliminar: ");
 		reader.nextLine();
 		String cName = reader.nextLine();
-		
+		try {
+			Clan c = searchClan(cName);
+			if(c != null) {
+				deleteAClan(c);
+			} else {
+			System.out.println(" ");	
+			}
+		} catch(NotFound m) {
+			System.out.println(m.getMessage());
+		}
 	}
 	
-	public void deleteNinja() {
-		
+	public void deleteNinja() throws NotFound {
+		System.out.println(" ");
+		System.out.println("Digite el nombre del clan al cual pertenece el personaje.");
+		reader.nextLine();
+		String cName = reader.nextLine();
+		try {
+			Clan c = searchClan(cName);
+			if(c != null) {
+				System.out.println(" ");
+				System.out.println("Digite el nombre del ninja que desea eliminar.");
+				String nName = reader.nextLine();
+				try {
+					Ninja n = searchNinjaInAClan(cName, nName);
+					deleteANinjaFromAClan(c, n);
+				} catch(NotFound m) {
+					System.out.println(m.getMessage());
+				}
+			}
+		} catch(NotFound m) {
+			System.out.println(m.getMessage());
+		}
 	}
 	
 	public void deleteJutsu() {
@@ -319,43 +425,59 @@ public class Icesi {
 		Clan auxC = getFirstClan();
 		Ninja auxN = auxC.getFirstNinja();
 		Jutsu auxJ = auxN.getFirstJutsu();
-		while(auxC != null) {
-			msg += auxC.toString() + ":\n";
-			while(auxN != null) {
-				msg += auxN.toString() + " || Tecnicas: ";
-				while(auxJ != null) {
-					msg += auxJ.toString() + "\n";
-					auxJ = auxJ.getNextJutsu();
+//		if(auxC == null) {
+//			auxC = auxC.getNextClan();
+//		} else {	
+			while(auxC != null) {
+				msg += auxC.toString() + ":\n";
+				while(auxN != null) {
+					msg += auxN.toString() + " || Tecnicas: ";
+					while(auxJ != null) {
+						msg += auxJ.toString() + "\n";
+						auxJ = auxJ.getNextJutsu();
+					}
+					auxN = auxN.getNextNinja();
+					if(auxN != null) {
+						auxJ = auxN.getFirstJutsu();
+					}
 				}
-				auxN = auxN.getNextNinja();
-				if(auxN != null) {
-					auxJ = auxN.getFirstJutsu();
+				if(auxN == null) {
+					auxC = auxC.getNextClan();
+					if(auxC != null) {
+						auxN = auxC.getFirstNinja();
+						auxJ = auxN.getFirstJutsu();
+					}
 				}
 			}
-			if(auxN == null) {
-				auxC = auxC.getNextClan();
-				if(auxC != null) {
-					auxN = auxC.getFirstNinja();
-					auxJ = auxN.getFirstJutsu();
-				}
-			}
-		}
+//		}
 		return msg;
 	}
 	
-	private Clan searchClan(String cName) throws NotFound {
+	public Clan searchClan(String cName) throws NotFound {
 		Clan searched = null;
 		Clan aux = firstClan;
-		while(aux != null) {
-			if(cName.equalsIgnoreCase(aux.getName())) {
-				searched = aux;
-				aux = null;
-			} else {
-				aux = aux.getNextClan();
+		if(firstClan.getFirstNinja() == null) {
+			while(aux != null) {
+				Ninja auxN = aux.getFirstNinja();
+				if(auxN != null) {
+					firstClan = aux;
+					aux = null;
+				} else {
+					aux = aux.getNextClan();
+				}
 			}
-		}
-		if(searched == null) {
-			throw new NotFound("El clan buscado no existe.");
+		}else {
+			while(aux != null) {
+				if(cName.equalsIgnoreCase(aux.getName())) {
+					searched = aux;
+					aux = null;
+				} else {
+					aux = aux.getNextClan();
+				}
+			}
+			if(searched == null) {
+				throw new NotFound("El clan buscado no existe.");
+			}
 		}
 		return searched;
 	}
@@ -385,5 +507,27 @@ public class Icesi {
 			throw new NotFound("El personaje buscado no existe.");
 		}
 		return nSearched;
+	}
+
+	public void serialize() throws FileNotFoundException, IOException {
+		File sFile = new File("files/Datos");
+		Vector save = new Vector();
+		save.add(firstClan);
+		try {
+			ObjectOutputStream obj = new ObjectOutputStream(new FileOutputStream(sFile));
+			obj.writeObject(getFirstClan());
+			obj.close();
+		} catch(IOException m) {
+		}
+		try {
+			ObjectInputStream obj2 = new ObjectInputStream(new FileInputStream(sFile));
+			save = (Vector)obj2.readObject();
+			obj2.close();
+		} catch(ClassNotFoundException m2) {
+			Logger.getLogger(Clan.class.getName()).log(Level.SEVERE, null, m2);
+		} catch(IOException m3) {
+		} catch(ArrayIndexOutOfBoundsException m4) {
+			System.out.println(m4.getMessage());
+		}
 	}
 }
