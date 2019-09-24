@@ -2,6 +2,8 @@ package model;
 
 import java.util.Comparator;
 
+import exceptions.SameName;
+
 public class Ninja implements Comparable<Ninja>, Comparator<Ninja> {
 
 	private String name;
@@ -13,10 +15,10 @@ public class Ninja implements Comparable<Ninja>, Comparator<Ninja> {
 	private Ninja nextNinja;
 	private Ninja previousNinja;
 	
-	public Ninja(String name, String personality, String crationDate, int powerQuantity) {
+	public Ninja(String name, String personality, String creationDate, int powerQuantity) {
 		this.name = name;
 		this.personality = personality;
-		this.creationDate = crationDate;
+		this.creationDate = creationDate;
 		this.powerQuantity = powerQuantity;
 	}
 
@@ -76,17 +78,22 @@ public class Ninja implements Comparable<Ninja>, Comparator<Ninja> {
 		this.previousNinja = previousNinja;
 	}
 	
-	public void addNewJutsu(Jutsu j) {
+	public void addNewJutsu(Jutsu j) throws SameName {
 		Jutsu jutsu = firstJutsu;
-		while(jutsu != null) {
-			if(!jutsu.getName().equals(j.getName())) {
-				if(jutsu .getNextJutsu() == null) {
-					jutsu.setNextJutsu(j);
+		if(firstJutsu == null) {
+			firstJutsu = j;
+		} else {
+			while(jutsu != null) {
+				if(!jutsu.getName().equalsIgnoreCase(j.getName())) {
+					if(jutsu.getNextJutsu() == null) {
+						jutsu.setNextJutsu(j);
+						jutsu = null;
+					} else {
+						jutsu = jutsu.getNextJutsu();
+					}
 				} else {
-					jutsu = jutsu.getNextJutsu();
+					throw new SameName("La tecnica que desea añadir ya existe en el sistema");
 				}
-			} else {
-				jutsu = jutsu.getNextJutsu();
 			}
 		}
 	}
@@ -97,11 +104,16 @@ public class Ninja implements Comparable<Ninja>, Comparator<Ninja> {
 
 	@Override
 	public int compareTo(Ninja n) {
-		return this.name.compareTo(n.getName());
+		return this.name.compareToIgnoreCase(n.getName());
 	}
 
 	@Override
 	public int compare(Ninja n1, Ninja n2) {
 		return n1.getPowerQuantity() - n2.getPowerQuantity();
+	}
+	
+	@Override
+	public String toString() {
+		return getName() + ", personalidad: " + getPersonality() + ", fecha: " + getCreationDate() + ", poder:  " + getPowerQuantity();
 	}
 }

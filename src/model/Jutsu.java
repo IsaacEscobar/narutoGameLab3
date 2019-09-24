@@ -45,6 +45,11 @@ public class Jutsu implements Comparable<Jutsu>, Comparator<Jutsu> {
 	
 	@Override
 	public int compareTo(Jutsu j) {
-		return this.getName().compareTo(j.getName());
+		return this.getName().compareToIgnoreCase(j.getName());
+	}
+	
+	@Override
+	public String toString() {
+		return getName() + ", factor: " + getMultiplier();
 	}
 }

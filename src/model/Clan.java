@@ -1,12 +1,13 @@
 package model;
 
+import exceptions.SameName;
+
 public class Clan implements Comparable<Clan> {
 	
 	private String name;
 	
 	private Clan nextClan;
 	private Ninja firstNinja;
-//	private Jutsu firstJutsu;
 
 	public Clan(String name) {
 		this.name = name;
@@ -35,39 +36,40 @@ public class Clan implements Comparable<Clan> {
 	public void setFirstNinja(Ninja n) {
 		this.firstNinja = n;
 	}
-	
-//	public Jutsu getFirstJutsu() {
-//		return firstJutsu;
-//	}
-//	
-//	public void setFirstJutsu(Jutsu j) {
-//		this.firstJutsu = j;
-//	}
 
-	public void addNewNinja(Ninja n) {
+	public void addNewNinja(Ninja n) throws SameName {
 		Ninja ninja = firstNinja;
-		while(ninja != null) {
-			if(!ninja.getName().equals(n.getName())) {
-				if(ninja.getNextNinja() == null) {
-					ninja.setNextNinja(n);
+		if(firstNinja == null) {
+			firstNinja = n;
+		} else {
+			while(ninja != null) {
+				if(!ninja.getName().equalsIgnoreCase(n.getName())) {
+					if(ninja.getNextNinja() == null) {
+						ninja.setNextNinja(n);
+						ninja = null;
+					} else {
+						ninja = ninja.getNextNinja();
+					}
 				} else {
-					ninja = ninja.getNextNinja();
+					throw new SameName("El personaje que desea añadir ya existe en el sistema");
 				}
-			} else {
-				ninja = ninja.getNextNinja();
 			}
 		}
 	}
 	
-	public void addNewJutsuToANinja(Ninja n, Jutsu j) {
+	public boolean addNewJutsuToANinja(Ninja n, Jutsu j) throws SameName {
+		boolean thereIs = true;
 		Ninja ninja = firstNinja;
 		while(ninja != null) {
 			if(ninja.compareTo(n) == 0) {
 				n.addNewJutsu(j);
+				ninja = null;
+				thereIs = false;
 			} else {
-				ninja = ninja.getNextNinja(); 
+				ninja = ninja.getNextNinja();
 			}
 		}
+		return thereIs;
 	}
 	
 	public void sortNinjasByName() {
@@ -80,11 +82,11 @@ public class Clan implements Comparable<Clan> {
 	
 	@Override
 	public int compareTo(Clan c) {
-		return this.getName().compareTo(c.getName());
+		return this.getName().compareToIgnoreCase(c.getName());
 	}
 	
 	@Override
 	public String toString() {
-		return "Clan " + getName();
+		return getName();
 	}
 }
